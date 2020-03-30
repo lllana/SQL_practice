@@ -85,6 +85,15 @@ name starting with S and in the Midwest region. Your final table should include
 three columns: the region name, the sales rep name, and the account name. Sort
 the accounts alphabetically (A-Z) according to account name.
 */
+SELECT R.name region, S.name rep, A.name account
+FROM sales_reps S
+JOIN region R
+ON S.region_id = R.id
+JOIN accounts A
+ON A.sales_rep_id = S.id
+WHERE S.name LIKE 'S%'
+AND R.name = 'Midwest'
+ORDER BY A.name;
 
 /*
 Provide a table that provides the region for each sales_rep along with their
@@ -93,6 +102,15 @@ last name starting with K and in the Midwest region. Your final table should
 include three columns: the region name, the sales rep name, and the account name.
 Sort the accounts alphabetically (A-Z) according to account name.
 */
+SELECT R.name region, S.name rep, A.name account
+FROM sales_reps S
+JOIN region R
+ON S.region_id = R.id
+JOIN accounts A
+ON A.sales_rep_id = S.id
+WHERE S.name LIKE '% K%'
+AND R.name = 'Midwest'
+ORDER BY A.name;
 
 /*
 Provide the name for each region for every order, as well as the account name
@@ -102,6 +120,16 @@ final table should have 3 columns: region name, account name, and unit price. In
 order to avoid a division by zero error, adding .01 to the denominator here is
 helpful total_amt_usd/(total+0.01).
 */
+SELECT 	R.name region, A.name account, O.total_amt_usd/(total + 0.01) unit_price
+FROM sales_reps S
+JOIN region R
+ON S.region_id = R.id
+JOIN accounts A
+ON A.sales_rep_id = S.id
+JOIN orders O
+ON O.account_id = A.id
+WHERE O.standard_qty > 100
+
 
 /*
 Provide the name for each region for every order, as well as the account name
@@ -112,6 +140,16 @@ region name, account name, and unit price. Sort for the smallest unit price firs
 In order to avoid a division by zero error, adding .01 to the denominator here
 is helpful (total_amt_usd/(total+0.01).
 */
+SELECT r.name region, a.name account, o.total_amt_usd/(o.total + 0.01) unit_price
+FROM region r
+JOIN sales_reps s
+ON s.region_id = r.id
+JOIN accounts a
+ON a.sales_rep_id = s.id
+JOIN orders o
+ON o.account_id = a.id
+WHERE o.standard_qty > 100 AND o.poster_qty > 50
+ORDER BY unit_price
 
 /*
 Provide the name for each region for every order, as well as the account name
