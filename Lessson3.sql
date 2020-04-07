@@ -1,5 +1,4 @@
 ###COUNT_the_№_of_rows
-
 SELECT COUNT(*)
 FROM accounts;
 
