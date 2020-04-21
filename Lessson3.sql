@@ -225,7 +225,7 @@ JOIN accounts a
 ON w.account_id=a.id
 JOIN sales_reps s
 ON a.sales_rep_id=s.id
-GROUP BY w.channel, s.name
+GROUP BY s.name, w.channel
 ORDER BY count_n desc;
 
 /*
@@ -242,8 +242,76 @@ JOIN sales_reps s
 ON a.sales_rep_id=s.id
 JOIN region r
 ON s.region_id=r.id
-GROUP BY w.channel, r.name
+GROUP BY  r.name, w.channel
 ORDER BY count_n desc;
+
+###Distinct
+/*
+Use DISTINCT to test if there are any accounts associated with more than one
+region
+*/
+SELECT a.id as "account id", r.id as "region id",
+a.name as "account name", r.name as "region name"
+FROM accounts a
+JOIN sales_reps s
+ON s.id = a.sales_rep_id
+JOIN region r
+ON r.id = s.region_id;
+
+SELECT DISTINCT id, name
+FROM accounts;
+/*
+or
+*/
+
+SELECT a.name sales_rep, r.name region, COUNT(*) count_reg
+FROM region r
+JOIN sales_reps s
+ON s.region_id = r.id
+JOIN accounts a
+ON s.id = a.Sales_rep_id
+GROUP BY sales_rep, region
+ORDER BY count_reg desc;
+
+/*
+Have any sales reps worked on more than one account?
+Actually all of the sales reps have worked on more than one account. The fewest
+number of accounts any sales rep works on is 3. There are 50 sales reps, and
+they all have more than one account. Using DISTINCT in the second query assures
+that all of the sales reps are accounted for in the first query.
+*/
+SELECT s.name, s.id, COUNT(*) num_accounts
+FROM accounts a
+JOIN sales_reps s
+ON s.id=a.sales_rep_id
+GROUP BY s.name, s.id
+ORDER BY num_accounts;
+
+SELECT DISTINCT id, name
+FROM sales_reps;
+
+###HAVINGs
+/*
+How many of the sales reps have more than 5 accounts that they manage?
+*/
+
+/*
+*/
+
+/*
+*/
+
+/*
+*/
+
+/*
+*/
+
+/*
+*/
+
+/*
+*/
 
 /*
 */
