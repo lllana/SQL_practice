@@ -401,3 +401,59 @@ ON a.id = w.account_id
 GROUP BY a.id, a.name, w.channel
 ORDER BY use_of_channel DESC
 LIMIT 10;
+
+###DATEs
+/*
+Find the sales in terms of total dollars for all orders in each year, ordered
+from greatest to least. Do you notice any trends in the yearly sales totals?
+*/
+
+SELECT DATE_PART('year', occurred_at) AS date,
+SUM(total_amt_usd) AS total_usd
+FROM orders
+GROUP BY 1
+ORDER BY 1;
+
+/*
+Which month did Parch & Posey have the greatest sales in terms of total dollars?
+Are all months evenly represented by the dataset
+*/
+SELECT DATE_PART('month', occurred_at) AS month,
+SUM(total_amt_usd) AS total_usd,
+COUNT(DATE_PART('month', occurred_at)) AS count_month
+FROM orders
+GROUP BY 1
+ORDER BY 1;
+
+/*
+Which year did Parch & Posey have the greatest sales in terms of total number
+of orders? Are all years evenly represented by the dataset?
+*/
+SELECT DATE_PART('year', occurred_at) AS month,
+SUM(total) AS total_qty
+FROM orders
+GROUP BY 1
+ORDER BY 2;
+
+/*
+Which month did Parch & Posey have the greatest sales in terms of total number
+of orders? Are all months evenly represented by the dataset?
+*/
+SELECT DATE_PART('month', occurred_at) AS month, 	SUM(total) AS total_qty,
+COUNT(DATE_PART('month', occurred_at)) AS count_month
+FROM orders
+GROUP BY 1
+ORDER BY 1;
+
+/*
+In which month of which year did Walmart spend the most on gloss paper in
+terms of dollars?
+*/
+
+/*
+
+*/
+
+/*
+
+*/
