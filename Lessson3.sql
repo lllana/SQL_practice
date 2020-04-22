@@ -412,43 +412,52 @@ SELECT DATE_PART('year', occurred_at) AS date,
 SUM(total_amt_usd) AS total_usd
 FROM orders
 GROUP BY 1
-ORDER BY 1;
+ORDER BY SUM(total_amt_usd) desc;
 
 /*
 Which month did Parch & Posey have the greatest sales in terms of total dollars?
 Are all months evenly represented by the dataset
 */
 SELECT DATE_PART('month', occurred_at) AS month,
-SUM(total_amt_usd) AS total_usd,
-COUNT(DATE_PART('month', occurred_at)) AS count_month
+SUM(total_amt_usd) AS total_usd
 FROM orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
 GROUP BY 1
-ORDER BY 1;
+ORDER BY 2 desc;
 
 /*
 Which year did Parch & Posey have the greatest sales in terms of total number
 of orders? Are all years evenly represented by the dataset?
 */
-SELECT DATE_PART('year', occurred_at) AS month,
-SUM(total) AS total_qty
+SELECT DATE_PART('year', occurred_at) ord_year,
+COUNT(*) total_sales
 FROM orders
 GROUP BY 1
-ORDER BY 2;
+ORDER BY 2 DESC;
 
 /*
 Which month did Parch & Posey have the greatest sales in terms of total number
 of orders? Are all months evenly represented by the dataset?
 */
-SELECT DATE_PART('month', occurred_at) AS month, 	SUM(total) AS total_qty,
-COUNT(DATE_PART('month', occurred_at)) AS count_month
+SELECT DATE_PART('month', occurred_at) AS month, 	COUNT(*) AS total_sales,
 FROM orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
 GROUP BY 1
-ORDER BY 1;
+ORDER BY 2 desc;
 
 /*
 In which month of which year did Walmart spend the most on gloss paper in
 terms of dollars?
 */
+SELECT DATE_TRUNC('month', o.occurred_at) ord_date,
+SUM(o.gloss_amt_usd) tot_spent, a .name
+FROM orders o
+JOIN accounts a
+ON a.id = o.account_id
+WHERE a.name = 'Walmart'
+GROUP BY 1,3
+ORDER BY 2 DESC
+LIMIT 1;
 
 /*
 
