@@ -24,19 +24,65 @@ FROM    (SELECT DATE_TRUNC('day', occurred_at) AS event_date,
  ORDER BY 2 desc;
 
  /*
+ What was the month/year combo for the first order placed?
  */
+SELECT DATE_TRUNC('month', occurred_at)
+FROM orders
+ORDER BY 1
+LIMIT 1
 
  /*
+ The average amount of standard paper sold on the first month that any order was
+ placed in the orders table (in terms of quantity).
  */
+ SELECT 	DATE_TRUNC('month', occurred_at),
+          AVG(standard_qty)
+ FROM orders
+ WHERE DATE_TRUNC('month', occurred_at) =
+ 	  (SELECT DATE_TRUNC('month', occurred_at)
+ 	  FROM orders
+ 	  ORDER BY 1
+ 	  LIMIT 1)
+ GROUP BY 1;
 
  /*
+ The average amount of gloss paper sold on the first month that any order was
+ placed in the orders table (in terms of quantity).
  */
+ SELECT 	DATE_TRUNC('month', occurred_at),
+          AVG(gloss_qty)
+FROM orders
+WHERE DATE_TRUNC('month', occurred_at) =
+	 (SELECT DATE_TRUNC('month', occurred_at)
+	  FROM orders
+	   ORDER BY 1
+	    LIMIT 1)
+GROUP BY 1;
 
  /*
+ The average amount of poster paper sold on the first month that any order was
+ placed in the orders table (in terms of quantity).
  */
+ SELECT 	DATE_TRUNC('month', occurred_at),
+          AVG(poster_qty)
+ FROM orders
+ WHERE DATE_TRUNC('month', occurred_at) =
+ 	  (SELECT DATE_TRUNC('month', occurred_at)
+ 	  FROM orders
+ 	  ORDER BY 1
+ 	  LIMIT 1)
+ GROUP BY 1;
 
  /*
+ The total amount spent on all orders on the first month that any order was
+ placed in the orders table (in terms of usd).
  */
-
- /*
- */
+SELECT 	DATE_TRUNC('month', occurred_at),
+        SUM(total_amt_usd) AS total_usd
+FROM orders
+WHERE DATE_TRUNC('month', occurred_at) =
+	 (SELECT DATE_TRUNC('month', occurred_at)
+	  FROM orders
+	   ORDER BY 1
+	    LIMIT 1)
+GROUP BY 1;
