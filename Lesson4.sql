@@ -123,6 +123,29 @@ ON t3.region_name=t2.region_name AND t3.total_sales=t2.total_sales
 For the region with the largest (sum) of sales total_amt_usd, how many total
 (count) orders were placed?
 */
+SELECT r.name region_name, COUNT(o.total) order_count
+FROM region r
+JOIN sales_reps s
+ON r.id=s.region_id
+JOIN accounts a
+ON s.id=a.sales_rep_id
+JOIN orders o
+ON a.id=o.account_id
+GROUP BY 1
+HAVING SUM(o.total_amt_usd) = (
+  SELECT MAX(total_amt)
+  FROM
+    (SELECT r.name region_name, SUM(o.total_amt_usd) total_amt
+    FROM region r
+    JOIN sales_reps s
+    ON r.id=s.region_id
+    JOIN accounts a
+    ON s.id=a.sales_rep_id
+    JOIN orders o
+    ON a.id=o.account_id
+    GROUP BY 1
+    ORDER BY 2 desc)sub
+                            )
 
 /*
 How many accounts had more total purchases than the account name which has bought
