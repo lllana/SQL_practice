@@ -215,6 +215,15 @@ ORDER BY 3 DESC;
 What is the lifetime average amount spent in terms of total_amt_usd for the top
 10 total spending accounts?
 */
+    SELECT AVG(total_sales)
+    FROM (SELECT a.id, a.name, SUM(o.total_amt_usd) total_sales
+      FROM accounts a
+      JOIN orders o
+      ON a.id = o.account_id
+      GROUP BY 1,2
+      ORDER BY 3 DESC
+      LIMIT 10)in_tab
+
 
 /*
 What is the lifetime average amount spent in terms of total_amt_usd, including
