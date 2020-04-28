@@ -93,7 +93,6 @@ WITH t1 AS (
 SELECT first_name, last_name, CONCAT(first_name, '.', last_name, '@', name, '.com')
 FROM t1;
 
-
 /*
 You may have noticed that in the previous solution some of the company names
 include spaces, which will certainly not work in an email address. See if you
@@ -101,6 +100,18 @@ can create an email address that will work by removing all of the spaces in the
 account name, but otherwise your solution should be just as in question 1. Some
 helpful documentation is here.
 */
+SELECT
+CONCAT (LEFT(primary_poc, STRPOS(primary_poc, ' ')-1),'.',
+RIGHT(primary_poc, LENGTH(primary_poc)-STRPOS(primary_poc,' ' )), '@',REPLACE(name, ' ', ''),'.com')
+FROM accounts;
+
+
+WITH t1 AS (
+   SELECT LEFT(primary_poc,     STRPOS(primary_poc, ' ') -1 ) first_name,
+          RIGHT(primary_poc, LENGTH(primary_poc) - STRPOS(primary_poc, ' ')) last_name, name
+   FROM accounts)
+SELECT first_name, last_name, CONCAT(first_name, '.', last_name, '@', REPLACE(name, ' ', ''), '.com')
+FROM  t1;
 
 /*
 We would also like to create an initial password, which they will change after
@@ -112,6 +123,22 @@ the number of letters in their last name, and then the name of the company they
 are working with, all capitalized with no spaces.
 */
 
+WITH t1 AS (
+    SELECT name,
+    LEFT(lower(primary_poc),STRPOS(primary_poc,' ')-1) AS pr_poc_name,
+    RIGHT(lower(primary_poc), LENGTH(primary_poc) - STRPOS(primary_poc,' ')) AS surname
+    FROM accounts)
+SELECT
+CONCAT(LEFT(t1.pr_poc_name,1),
+      RIGHT(t1.surname,1),
+      LEFT(t1.surname,1),
+      RIGHT(t1.pr_poc_name,1),
+      LENGTH(t1.pr_poc_name),
+      LENGTH(t1.surname),
+      REPLACE(UPPER(name),' ',''))
+FROM t1;
+
+###CAST
 /*
 */
 
