@@ -36,7 +36,7 @@ SELECT id, account_id, total,
 FROM orders;
 
 ###Aggregates_in_Window Functions
-/*
+/* Comparison
 */
 SELECT id,
        account_id,
@@ -51,10 +51,67 @@ SELECT id,
 FROM orders;
 
 /*
+Now remove ORDER BY DATE_TRUNC('month',occurred_at) in each line of the query
+that contains it in the SQL Explorer below. Evaluate your new query, compare it
+to the results in the SQL Explorer above, and answer the subsequent quiz questions.
 */
+SELECT id,
+       account_id,
+       standard_qty,
+       DATE_TRUNC('month', occurred_at) AS month,
+       DENSE_RANK() OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS dense_rank,
+       SUM(standard_qty) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS sum_std_qty,
+       COUNT(standard_qty) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS count_std_qty,
+       AVG(standard_qty) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS avg_std_qty,
+       MIN(standard_qty) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS min_std_qty,
+       MAX(standard_qty) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('month',occurred_at)) AS max_std_qty
+FROM orders
 
 /*
+The ORDER BY clause is one of two clauses integral to window functions. The ORDER
+and PARTITION define what is referred to as the “window”—the ordered subset of
+data over which calculations are made. Removing ORDER BY just leaves an unordered
+partition; in our query's case, each column's value is simply an aggregation
+(e.g., sum, count, average, minimum, or maximum) of all the standard_qty values
+in its respective account_id.
+
+As Stack Overflow user mathguy explains:
+
+The easiest way to think about this - leaving the ORDER BY out is equivalent to
+"ordering" in a way that all rows in the partition are "equal" to each other.
+Indeed, you can get the same effect by explicitly adding the ORDER BY clause
+like this: ORDER BY 0 (or "order by" any constant expression), or even, more
+emphatically, ORDER BY NULL.
 */
+
+###Aliases for Multiple Window Functions
+SELECT id,
+       account_id,
+       DATE_TRUNC('year',occurred_at) AS year,
+       DENSE_RANK() OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS dense_rank,
+       total_amt_usd,
+       SUM(total_amt_usd) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS sum_total_amt_usd,
+       COUNT(total_amt_usd) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS count_total_amt_usd,
+       AVG(total_amt_usd) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS avg_total_amt_usd,
+       MIN(total_amt_usd) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS min_total_amt_usd,
+       MAX(total_amt_usd) OVER (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at)) AS max_total_amt_usd
+FROM orders
+
+
+SELECT id,
+       account_id,
+       DATE_TRUNC('year',occurred_at) AS year,
+       DENSE_RANK() OVER account_year_window AS dense_rank,
+       total_amt_usd,
+       SUM(total_amt_usd) OVER account_year_window AS sum_total_amt_usd,
+       COUNT(total_amt_usd) OVER account_year_window AS count_total_amt_usd,
+       AVG(total_amt_usd) OVER account_year_window AS avg_total_amt_usd,
+       MIN(total_amt_usd) OVER account_year_window AS min_total_amt_usd,
+       MAX(total_amt_usd) OVER account_year_window AS max_total_amt_usd
+FROM orders
+WINDOW account_year_window AS (PARTITION BY account_id ORDER BY DATE_TRUNC('year',occurred_at))
+
+###Comparing a Row to Previous Row
 
 /*
 */
