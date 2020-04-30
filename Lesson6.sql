@@ -190,6 +190,3 @@ SELECT  account_id,
         NTILE(100) OVER (PARTITION BY account_id ORDER BY total_amt_usd) total_percentile
 FROM orders
 ORDER BY 4 desc;
-
-/*
-*/
