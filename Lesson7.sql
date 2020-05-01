@@ -163,7 +163,8 @@ FROM double_accounts
 GROUP BY 1
 
 /*
-*/
-
-/*
+More practice
+https://www.hackerrank.com/domains/sql
+https://mode.com/sql-tutorial/sql-business-analytics-training/
+https://www.analyticsvidhya.com/blog/2017/01/46-questions-on-sql-to-test-a-data-science-professional-skilltest-solution/
 */
