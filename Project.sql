@@ -114,12 +114,73 @@ FROM (
   FROM film) f1
   ORDER BY 2 desc;
 
+
+###Questions_set1
 /*
+Create a query that lists each movie,
+the film category it is classified in,
+and the number of times it has been rented out.
+For this query, you will need 5 tables:
+Category,
+Film_Category,
+Inventory,
+Rental and Film.
+
+Your solution should have three columns:
+Film title,
+Category name
+Count of Rentals.
+
+The following table header provides a preview of what the resulting table should
+ look like if you order by category name followed by the film title.
+
+HINT: One way to solve this is to create a count of movies using aggregations,
+subqueries and Window functions.
 */
 
+WITH f1 AS (
+  SELECT f.title film_title, c.name category_name
+  FROM film f
+    JOIN film_category fc
+    ON fc.film_id = f.film_id
+    JOIN category c
+    ON fc.category_id = c.category_id
+    WHERE c.name  = 'Animation' OR
+          c.name  = 'Children' OR
+          c.name  = 'Classics' OR
+          c.name  = 'Comedy' OR
+          c.name  = 'Family' OR
+          c.name  = 'Music'),
+
+    f2 AS (SELECT f.title film_title,
+          COUNT(r.*) AS rental_count
+    FROM rental r
+    JOIN Inventory i
+    ON i.inventory_id = r.inventory_id
+    JOIN film f
+    ON i.film_id = f.film_id
+    GROUP BY 1
+    ORDER BY 2 desc)
+
+SELECT f1.film_title, f1.category_name,
+      f2.rental_count
+FROM f1
+JOIN f2
+ON f1.film_title = f2.film_title
+ORDER BY 2,1;
+
 /*
+Now we need to know how the length of rental duration of these family-friendly
+movies compares to the duration that all movies are rented for.
+ Can you provide a table with
+ - the movie titles and divide them into 4 levels
+ (first_quarter, second_quarter, third_quarter, and final_quarter)
+ based on the quartiles (25%, 50%, 75%) of the rental duration for movies across all categories?
+ Make sure to also indicate the category that these family-friendly movies fall into.
 */
 
+
+###Questions_set2
 /*
 */
 
