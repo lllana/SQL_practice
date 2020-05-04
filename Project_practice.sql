@@ -259,8 +259,7 @@ FROM payment p
 JOIN top_10
 ON p.customer_id = top_10.customer_id
 GROUP BY 1,2
-ORDER BY 2,1; 
-
+ORDER BY 2,1;
 
 /*
 Finally, for each of these top 10 paying customers, I would like to find out
@@ -270,3 +269,30 @@ this for each of these 10 paying customers. Also, it will be tremendously
 helpful if you can identify the customer name who paid the most difference in
 terms of payments.
 */
+WITH top_10 AS
+    (SELECT (c.first_name)||' '||(c.last_name) full_name,
+            c.customer_id,
+            SUM(p.amount)
+    FROM customer c
+    JOIN payment p
+    ON p.customer_id = c.customer_id
+    GROUP BY 1,2
+    ORDER BY 3 desc
+    LIMIT 10),
+
+    p1 AS
+    (SELECT DATE_TRUNC('month', payment_date) AS pay_month,
+    customer_id,
+    COUNT(*) AS pay_count,
+    SUM(amount) AS pay_amount
+    FROM payment
+    GROUP BY 1,2)
+
+SELECT top_10.full_name, p1.pay_month,
+        p1.pay_amount,
+        LAG(p1.pay_amount) OVER (PARTITION BY top_10.full_name ORDER BY p1.pay_month) lag,
+        p1.pay_amount - LAG(p1.pay_amount,1) OVER (PARTITION BY top_10.full_name ORDER BY p1.pay_month) AS lag_difference
+FROM top_10
+JOIN p1
+ON p1.customer_id = top_10.customer_id
+ORDER BY 5 desc;
