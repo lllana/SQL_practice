@@ -240,6 +240,26 @@ they made on a monthly basis during 2007, and what was the amount of the monthly
 payments. Can you write a query to capture the customer name, month and year of
 payment, and total payment amount for each month by these top 10 paying customers?
 */
+WITH top_10 AS
+    (SELECT (c.first_name)||' '||(c.last_name) full_name,
+            c.customer_id,
+            SUM(p.amount)
+    FROM customer c
+    JOIN payment p
+    ON p.customer_id = c.customer_id
+    GROUP BY 1,2
+    ORDER BY 3 desc
+    LIMIT 10)
+
+SELECT DATE_TRUNC('month', p.payment_date) pay_month,
+      top_10.full_name,
+      COUNT(p.*),
+      SUM(p.amount) pay_amt
+FROM payment p
+JOIN top_10
+ON p.customer_id = top_10.customer_id
+GROUP BY 1,2
+ORDER BY 2,1; 
 
 
 /*
