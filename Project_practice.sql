@@ -133,9 +133,6 @@ Count of Rentals.
 
 The following table header provides a preview of what the resulting table should
  look like if you order by category name followed by the film title.
-
-HINT: One way to solve this is to create a count of movies using aggregations,
-subqueries and Window functions.
 */
 
 WITH f1 AS (
@@ -145,12 +142,7 @@ WITH f1 AS (
     ON fc.film_id = f.film_id
     JOIN category c
     ON fc.category_id = c.category_id
-    WHERE c.name  = 'Animation' OR
-          c.name  = 'Children' OR
-          c.name  = 'Classics' OR
-          c.name  = 'Comedy' OR
-          c.name  = 'Family' OR
-          c.name  = 'Music'),
+    WHERE c.name IN ('Animation','Children','Classics','Comedy','Family','Music'),
 
     f2 AS (SELECT f.title film_title,
           COUNT(r.*) AS rental_count
@@ -170,8 +162,6 @@ ON f1.film_title = f2.film_title
 ORDER BY 2,1;
 
 /*
-Now we need to know how the length of rental duration of these family-friendly
-movies compares to the duration that all movies are rented for.
  Can you provide a table with
  - the movie titles and divide them into 4 levels
  (first_quarter, second_quarter, third_quarter, and final_quarter)
@@ -179,6 +169,25 @@ movies compares to the duration that all movies are rented for.
  Make sure to also indicate the category that these family-friendly movies fall into.
 */
 
+SELECT  film_title,
+        category_name,
+        rental_duration,
+        CASE WHEN standard_quartile = 1 THEN 'first_quarter_25%'
+              WHEN standard_quartile = 2 THEN 'second_quarter_50%'
+              WHEN standard_quartile = 3 THEN 'third_quarter_75%'
+              ELSE 'final_quarter' END AS quartile_level
+FROM(
+  SELECT f.title film_title,
+        c.name category_name,
+        f.rental_duration rental_duration,
+        NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
+  FROM film f
+    JOIN film_category fc
+    ON fc.film_id = f.film_id
+    JOIN category c
+    ON fc.category_id = c.category_id
+    WHERE c.name IN ('Animation','Children','Classics','Comedy','Family','Music'))t1
+    
 
 ###Questions_set2
 /*
