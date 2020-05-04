@@ -103,17 +103,16 @@ the 4 filmlen_groups:
 
 Match the count of movies in each filmlen_group.
 */
-
-SELECT DISTINCT(filmlen_groups),
-      COUNT(title) OVER (PARTITION BY filmlen_groups) AS filmcount_bylencat
-FROM
-    (SELECT title, length,
-    CASE WHEN f.length > 180 THEN 'More than 3 hours'
-        WHEN f.length > 120 THEN 'Between 2-3 hours'
-        WHEN f.length > 60 THEN 'Between 1-2 hours'
-        ELSE '1 hour or less' END AS filmlen_groups
-FROM film f) t1
-ORDER BY 1
+SELECT DISTINCT(filmlen_group),
+      COUNT(title) OVER (PARTITION BY filmlen_group) AS film_counts
+FROM (
+  SELECT title, length,
+        CASE WHEN length <= 60  then '1 hour or less'
+            WHEN length >60 AND length <=120 then 'Between 1-2 hours'
+            WHEN length >120 AND length <=180 then 'Between 2-3 hours'
+            ELSE 'more than 3 hours' END AS filmlen_group
+  FROM film) f1
+  ORDER BY 2 desc;
 
 /*
 */
