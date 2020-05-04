@@ -187,14 +187,66 @@ FROM(
     JOIN category c
     ON fc.category_id = c.category_id
     WHERE c.name IN ('Animation','Children','Classics','Comedy','Family','Music'))t1
-    
 
-###Questions_set2
 /*
+Finally, provide a table with the family-friendly film category,
+each of the quartiles, and the corresponding count of movies within each
+combination of film category for each corresponding rental duration category.
+ The resulting table should have three columns:
+- Category,
+- Rental length category
+- Count
+*/
+WITH t1 AS (
+  SELECT c.name category_name,
+        NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
+  FROM film f
+    JOIN film_category fc
+    ON fc.film_id = f.film_id
+    JOIN category c
+    ON fc.category_id = c.category_id
+    WHERE c.name IN ('Animation','Children','Classics','Comedy','Family','Music')) t1
+
+  SELECT category_name, standard_quartile, Count(category_name) AS count
+  FROM t1
+  GROUP BY 1,2
+  ORDER BY 1,2;
+
+
+
+    ###Questions_set2
+/*
+We want to find out how the two stores compare in their count of rental orders
+during every month for all the years we have data for. Write a query that returns
+the store ID for the store, the year and month and the number of rental orders
+each store has fulfilled for that month. Your table should include a column for
+each of the following: year, month, store ID and count of rental orders fulfilled
+during that month.
 */
 
-/*
-*/
+SELECT DATE_PART('Month',r.rental_date) rental_month,
+      DATE_PART('Year',r.rental_date) rental_year,
+      i.store_id,
+      COUNT (r.*)
+FROM rental r
+JOIN inventory i
+ON r.inventory_id = i.inventory_id
+GROUP BY 1,2,3
+ORDER BY 4 desc;
 
 /*
+We would like to know who were our top 10 paying customers, how many payments
+they made on a monthly basis during 2007, and what was the amount of the monthly
+payments. Can you write a query to capture the customer name, month and year of
+payment, and total payment amount for each month by these top 10 paying customers?
+*/
+
+
+/*
+Finally, for each of these top 10 paying customers, I would like to find out
+the difference across their monthly payments during 2007. Please go ahead and
+write a query to compare the payment amounts in each successive month. Repeat
+this for each of these 10 paying customers. Also, it will be tremendously
+helpful if you can identify the customer name who paid the most difference in
+terms of payments.
 */
