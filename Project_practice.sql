@@ -296,3 +296,21 @@ FROM top_10
 JOIN p1
 ON p1.customer_id = top_10.customer_id
 ORDER BY 5 desc;
+
+###Submission Questions
+/*
+Where are located rental stores with the biggest amount of sales in 2007 (top 5)?
+*/
+
+/*
+What month had the biggest sales across top 5 stores?
+*/
+
+/*
+What store made the biggest difference in monthly sales in period from February to May 2007?
+*/
+
+
+/*
+What the top 5 actors played just in movies with a 'high' level of rental score?
+*/
