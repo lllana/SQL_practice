@@ -1,11 +1,10 @@
 ###Submission Questions
 /*
-Where is located the rental store with the highest average payment?
-*/
+Where are located the rental stores with the highest total sales?*/
 
 WITH top AS (
     SELECT  s.store_id store_id,
-            AVG(p.amount) average_payment
+            SUM(p.amount) payment
     FROM staff s
     JOIN payment p
     ON s.staff_id = p.staff_id
@@ -24,10 +23,11 @@ st_add AS (
         JOIN country co
         ON ci.country_id = co.country_id)
 
-SELECT top.store_id, top.average_payment, st_add.city, st_add.country
+SELECT top.store_id, top.payment, st_add.city, st_add.country
 FROM top
 JOIN st_add
 ON top.store_id = st_add.store_id;
+
 
 /*
 What month drama movies had the biggest sales?
@@ -70,9 +70,9 @@ FROM (
 GROUP BY 1,2
 ORDER BY 3 desc;
 
-/*
-Movies of what categories more frequently fall under one of the rental score levels?
 
+/*
+Movies of what categories more frequently fall under designated rental score levels?
 */
 (SELECT DISTINCT category, rental_level, COUNT (film_id)
 FROM (
