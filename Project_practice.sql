@@ -299,11 +299,37 @@ ORDER BY 5 desc;
 
 ###Submission Questions
 /*
-Where are located rental stores with the biggest amount of sales in 2007 (top 5)?
+Where is located rental store with the biggest amount of sales in 2007?
 */
+WITH top AS (
+    SELECT  s.store_id store_id,
+            SUM(p.amount) sales_amt
+    FROM staff s
+    JOIN payment p
+    ON s.staff_id = p.staff_id
+    GROUP BY 1
+    ORDER BY 2 desc
+    LIMIT 1),
+
+st_add AS (
+    SELECT  s.store_id,
+            ci.city city,
+            co.country country
+        FROM store s
+        JOIN address a
+        ON s.address_id = a.address_id
+        JOIN city ci
+        ON a.city_id = ci.city_id
+        JOIN country co
+        ON ci.country_id = co.country_id)
+
+SELECT top.store_id, top.sales_amt, st_add.city, st_add.country
+FROM top
+JOIN st_add
+ON top.store_id = st_add.store_id
 
 /*
-What month had the biggest sales across top 5 stores?
+What month had the biggest sales across stores?
 */
 
 /*
