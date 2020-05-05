@@ -361,7 +361,7 @@ FROM (
           JOIN p
           ON d.film_id = p.film_id)
 
-  SELECT d1.category category, d1.film_id, d1.new_date, DATE_PART('month', d1.new_date) d_month,
+  SELECT d1.category category, d1.film_id, d1.new_date d_month,
           SUM(d1.pay_amt) OVER (ORDER BY d1.new_date) AS d_amt
   FROM d1
   ORDER BY 5 desc) sub
@@ -370,10 +370,63 @@ GROUP BY 1,2
 ORDER BY 3 desc;
 
 /*
-What store made the biggest difference in monthly sales in period from February to May 2007?
+Movies of what categories more frequently fall under one of the rental score levels?
+
 */
+(SELECT DISTINCT category, rental_level, COUNT (film_id)
+FROM (
+      SELECT  fc.film_id film_id,
+              c.name category,
+              CASE WHEN f.rental_rate = '4.99' THEN 'High level'
+                  WHEN f.rental_rate = '2.99' THEN 'Medium level'
+                  ELSE 'Low level' END AS rental_level
+      FROM category c
+      JOIN film_category fc
+      ON c.category_id = fc.category_id
+      JOIN film f
+      ON f.film_id = fc.film_id) SUB
+WHERE rental_level = 'High level'
+GROUP BY 1,2
+ORDER BY 3 desc
+LIMIT 5)
 
+UNION ALL
 
+(SELECT DISTINCT category, rental_level, COUNT (film_id)
+FROM (
+      SELECT  fc.film_id film_id,
+              c.name category,
+              CASE WHEN f.rental_rate = '4.99' THEN 'High level'
+                  WHEN f.rental_rate = '2.99' THEN 'Medium level'
+                  ELSE 'Low level' END AS rental_level
+      FROM category c
+      JOIN film_category fc
+      ON c.category_id = fc.category_id
+      JOIN film f
+      ON f.film_id = fc.film_id) SUB
+WHERE rental_level = 'Medium level'
+GROUP BY 1,2
+ORDER BY 3 desc
+LIMIT 5)
+
+UNION ALL
+
+(SELECT DISTINCT category, rental_level, COUNT (film_id)
+FROM (
+      SELECT  fc.film_id film_id,
+              c.name category,
+              CASE WHEN f.rental_rate = '4.99' THEN 'High level'
+                  WHEN f.rental_rate = '2.99' THEN 'Medium level'
+                  ELSE 'Low level' END AS rental_level
+      FROM category c
+      JOIN film_category fc
+      ON c.category_id = fc.category_id
+      JOIN film f
+      ON f.film_id = fc.film_id) SUB
+WHERE rental_level = 'Low level'
+GROUP BY 1,2
+ORDER BY 3 desc
+LIMIT 5)
 /*
 What the top 5 actors played just in movies with a 'high' level of rental score?
 */
