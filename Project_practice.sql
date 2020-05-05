@@ -299,17 +299,17 @@ ORDER BY 5 desc;
 
 ###Submission Questions
 /*
-Where is located rental store with the biggest amount of sales in 2007?
+Where is located the rental store with the highest average payment?
 */
+
 WITH top AS (
     SELECT  s.store_id store_id,
-            SUM(p.amount) sales_amt
+            AVG(p.amount) average_payment
     FROM staff s
     JOIN payment p
     ON s.staff_id = p.staff_id
     GROUP BY 1
-    ORDER BY 2 desc
-    LIMIT 1),
+    ORDER BY 2 desc),
 
 st_add AS (
     SELECT  s.store_id,
@@ -323,14 +323,51 @@ st_add AS (
         JOIN country co
         ON ci.country_id = co.country_id)
 
-SELECT top.store_id, top.sales_amt, st_add.city, st_add.country
+SELECT top.store_id, top.average_payment, st_add.city, st_add.country
 FROM top
 JOIN st_add
-ON top.store_id = st_add.store_id
+ON top.store_id = st_add.store_id;
 
 /*
-What month had the biggest sales across stores?
+What month drama movies had the biggest sales?
 */
+SELECT category, d_month, AVG(d_amt) payment_amt
+FROM (
+      WITH d AS (
+            SELECT  fc.film_id film_id,
+                    c.name category
+            FROM category c
+            JOIN film_category fc
+            ON c.category_id = fc.category_id
+            WHERE c.name = 'Drama'),
+
+        p AS (
+            SELECT i.film_id film_id,
+                  DATE_TRUNC('month', p.payment_date) new_date,
+                  SUM (p.amount) payment_amt
+            FROM inventory i
+            JOIN rental r
+            ON i.inventory_id = r.inventory_id
+            JOIN payment p
+            ON r.customer_id = p.customer_id
+            GROUP BY 1,2),
+
+        d1 AS (
+          SELECT d.category category,
+                  d.film_id film_id,
+                  p.new_date new_date,
+                  p.payment_amt pay_amt
+          FROM d
+          JOIN p
+          ON d.film_id = p.film_id)
+
+  SELECT d1.category category, d1.film_id, d1.new_date, DATE_PART('month', d1.new_date) d_month,
+          SUM(d1.pay_amt) OVER (ORDER BY d1.new_date) AS d_amt
+  FROM d1
+  ORDER BY 5 desc) sub
+
+GROUP BY 1,2
+ORDER BY 3 desc;
 
 /*
 What store made the biggest difference in monthly sales in period from February to May 2007?
